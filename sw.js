@@ -1,4 +1,4 @@
-const cacheName = "cache1"; // Change value to force update
+const cacheName = "cache4"; // Change value to force update
 
 self.addEventListener("install", event => {
 	// Kick out the old service worker
@@ -27,7 +27,6 @@ self.addEventListener("install", event => {
 				"js/script.js", // Main Javascript file
 				"js/xeokit-sdk.es.js", // Main Javascript file
 				"css/style.css", // Main CSS file
-				"css/annotation.css", // Main CSS file
 			]);
 		})
 	);

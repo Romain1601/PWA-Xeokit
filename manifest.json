@@ -1,8 +1,8 @@
 {
 	"name": "PWA Xeokit",
-	"short_name": "PWA Xeokit",
+	"short_name": "PWA",
 	"display": "standalone",
-	"start_url": "./?utm_source=pwa_install",
+	"start_url": "./index.html",
 	"scope": ".",
 	"theme_color": "#000",
 	"background_color": "#000",

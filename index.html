@@ -3,7 +3,6 @@
 
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>PWA Xeokit</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		
@@ -17,8 +16,8 @@
 
 		<!-- Styles -->
 		<link rel="stylesheet" href="css/style.css">
-		<link rel="stylesheet" href="css/annotation.css">
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+		
 
 		<!-- Javscript -->
 		<script>
@@ -28,22 +27,62 @@
 				});
 			}
 		</script>
-		<script defer src="/js/script.js"></script>
+		
 	</head>
 
 	<body>
 		<canvas id="myCanvas"></canvas>
 		<canvas id="myNavCubeCanvas"></canvas>
 
+		<div class="modal fade" id="myModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog">
+			  <div class="modal-content">
+				<div class="modal-header">
+				  <h5 class="modal-title" id="exampleModalLabel">Déclarer un évènement</h5>
+				  <button type="button" id="closebutton" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="inputs" class="needs-validation" novalidate="">
+                        <div class="form-group mx-2 mb-3">
+                            <label for="firstname">Titre</label>
+                            <select class="form-select" id="titreannotation" aria-label="Default select example">
+								<option selected>Sélectionnez un type d'évènement</option>
+								<option value="1">Fuite d'eau</option>
+								<option value="2">Dégradation</option>
+								<option value="3">Option 3</option>
+							</select>
+                        </div>
+                        <div class="form-group mx-2 mb-3">
+                            <label for="lastname">Description</label>
+                            <input type="text" class="form-control" id="descriptionannotation" placeholder="Détaillez les circonstances, les impacts..." required="">
+                        </div>
+						<div class="form-group mx-2">
+							<label for="formFile" class="form-label">Default file input example</label>
+  							<input class="form-control" type="file" id="formFile">
+						</div>
+                    </form>
+				</div>
+				<div class="modal-footer">
+				  <button type="submit" id="submit" class="btn btn-primary" data-toggle="modal" data-target="#myModal" data-bs-dismiss="modal">Valider</button>
+				</div>
+			  </div>
+			</div>
+		</div>
+
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+		<script type="module" src="js/script.js"></script>
 	</body>
 
-	<script type="module">
+	<!-- <script type="module">
 
 		//------------------------------------------------------------------------------------------------------------------
 		// Import the modules we need for this example
 		//------------------------------------------------------------------------------------------------------------------
 	
-		import {Viewer, XKTLoaderPlugin, AnnotationsPlugin, NavCubePlugin} from "/js/xeokit-sdk.es.js";
+		import {Viewer, XKTLoaderPlugin, AnnotationsPlugin, NavCubePlugin} from "./js/xeokit-sdk.es.js";
 	
 		//------------------------------------------------------------------------------------------------------------------
 		// Create a Viewer and arrange the camera
@@ -52,10 +91,6 @@
 		const viewer = new Viewer({
 			canvasId: "myCanvas"
 		});
-	
-		/* viewer.camera.eye = [-3.93, 2.85, 27.01];
-		viewer.camera.look = [4.40, 3.72, 8.89];
-		viewer.camera.up = [-0.01, 0.99, 0.039]; */
 	
 		viewer.camera.eye = [1841982.5187600704, 19.207790938410042, -5173303.042326414];
 		viewer.camera.look = [1842011.793756829, 9.913817421536704, -5173299.841616623];
@@ -97,23 +132,8 @@
 				title: "Untitled",
 				description: "No description"
 			},
-	
-			// Amount to offset each Annotation from its Entity surface (0.3 is the default value).
-			// This is useful when the Annotation is occludable, which is when it is hidden when occluded
-			// by other objects. When occludable, there is potential for the Annotation#worldPos to become
-			// visually embedded within the surface of its Entity when viewed from a distance. This happens
-			// as a result of limited GPU accuracy GPU accuracy, especially when the near and far view-space clipping planes,
-			// specified by Perspective#near and Perspective#far, or Ortho#near and Perspective#far, are far away from each other.
-			//
-			// Offsetting the Annotation may ensure that it does become visually embedded within its Entity. We may also
-			// prevent this by keeping the distance between the view-space clipping planes to a minimum. In general, a good
-			// default value for Perspective#far and Ortho#far is around ````2.000````.
-	
-			surfaceOffset: 0.1
-		});
-	
-		annotations.on("markerClicked", (annotation) => {
-			annotation.labelShown = !annotation.labelShown;
+
+			surfaceOffset: 0.3
 		});
 	
 		annotations.on("markerMouseEnter", (annotation) => {
@@ -129,6 +149,7 @@
 		//------------------------------------------------------------------------------------------------------------------
 	
 		var i = 1;
+		const myModal = new bootstrap.Modal(document.getElementById('myModal'))
 	
 		viewer.scene.input.on("mouseclicked", (coords) => {
 	
@@ -136,9 +157,41 @@
 				canvasPos: coords,
 				pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
 			});
+			
 	
+			myModal.show()
+			var titre = "";
+			var description = ""
+
+			var titre2 = prompt("titre")
+
+			$(document).ready(function () {
+				$("#submit").click(function() {
+
+					//Declare and initialize variable for display inputs in div
+					
+					$("#inputs").each(function() {
+						titre = $(this).find("#titreannotation").val();
+						description = $(this).find("#descriptionannotation").val();
+					});
+
+					//console.log(titre)
+					//console.log(description)
+				
+					$("#myModal").hide()
+				});
+			})
+
+			
+		
+
+
 			if (pickResult) {
-				console.log(pickResult)
+				console.log("pickresult ", pickResult)
+				console.log(titre)
+				console.log(description)
+				
+				
 	
 				const annotation = annotations.createAnnotation({
 					id: "myAnnotation" + i,
@@ -148,8 +201,8 @@
 					labelShown: true,       // Optional, default is true
 					values: {               // HTML template values
 						glyph: "A" + i,
-						title: "My annotation " + i,
-						description: "My description " + i
+						title: "My annotation " + titre2,
+						description: "My description " + description
 					},
 				});
 	
@@ -157,7 +210,7 @@
 			}
 		});
 	
-		sceneModel.on("loaded", () => {
+		/* sceneModel.on("loaded", () => {
 			annotations.createAnnotation({
 				id: "myAnnotation0",
 				/////////////////////////////////////////  Entity
@@ -183,10 +236,10 @@
 					annotation.setLabelShown(!annotation.getLabelShown());
 				}
 			});
-		})
+		}) */
 	
 		window.viewer = viewer;
 	
-	</script>
+	</script> -->
 
 </html>
