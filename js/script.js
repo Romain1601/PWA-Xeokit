@@ -156,7 +156,7 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 </div>"
             }
 
-            //Régler le probleme des annotations qui se créée en plus lorsqu'on clique sur le modal
+            //Régle le probleme des annotations qui se créée en plus lorsqu'on clique sur le modal
             var test = Object.keys(annotations.annotations);
             test.forEach((t) => {
                 if(t.startsWith("__")){
@@ -167,7 +167,109 @@ viewer.scene.input.on("mouseclicked", (coords) => {
             $("#inputs")[0].reset();
             viewer.scene.input.setEnabled(true);
 
+            
+
         });
+
+        $("#partageImg").click(function() {
+            const pickResult = viewer.scene.pick({
+                canvasPos: coords,
+                pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
+            });
+            
+            //Recuperation des valeurs entrées par l'utilisateur
+            $("#inputs").each(function() {
+                titre = $("#titreannotation option:selected").text();
+                description = $("#descriptionannotation").val();
+                image = $("#formFile").get(0).files
+            });
+
+            if(titre == "Fuite d'eau"){
+                logoAnnotation = "F"
+                colorAnnotation = "blue"
+                
+            }
+            else if (titre == "Dégradation"){
+                logoAnnotation = "D"
+                colorAnnotation = "red"
+            }
+            else {
+                logoAnnotation = "X"
+                colorAnnotation = "black"
+            }
+            
+
+            
+
+            const annotation = annotations.createAnnotation({
+                id:"myAnnotation" + i,
+                worldPos:[pickResult.worldPos[0], pickResult.worldPos[1], pickResult.worldPos[2]],
+                occludable: false,
+                markerShown: true,
+                labelShown: false,
+                labelHTML: "<div class='annotation-label' style='background-color: {{labelBGColor}};'>\
+                    <div class='annotation-title'>{{title}}</div>\
+                    <div class='annotation-desc'>{{description}}</div>\
+                    <br><img alt='myImage' width='150px' height='100px' src='{{imageSrc}}'>\
+                    </div>",
+                values: {
+                    glyph: logoAnnotation,
+                    title: titre,
+                    description: description,
+                    markerBGColor: colorAnnotation,
+                    //imageSrc: URL.createObjectURL(image[0])
+                    //imageSrc: imageSource
+                },
+
+            })
+            
+
+            if (image.length !== 0){
+                console.log(annotation.plugin)
+                imageSource = URL.createObjectURL(image[0])
+                annotation.setValues({imageSrc: imageSource})
+            }
+            else {
+                annotation._labelHTML = "<div class='annotation-label' style='background-color: {{labelBGColor}};'>\
+                <div class='annotation-title'>{{title}}</div>\
+                <div class='annotation-desc'>{{description}}</div>\
+                </div>"
+            }
+
+            //Régle le probleme des annotations qui se créée en plus lorsqu'on clique sur le modal
+            var test = Object.keys(annotations.annotations);
+            test.forEach((t) => {
+                if(t.startsWith("__")){
+                    annotations.destroyAnnotation(t)
+                }
+            })
+            $("#myModal").hide(); 
+            $("#inputs")[0].reset();
+            viewer.scene.input.setEnabled(true);
+
+            const canvas = viewer.scene.canvas;
+            const canvasElement = canvas.canvas;
+            const aspect = canvasElement.height / canvasElement.width;
+            const width = 200;
+            const height = Math.floor(width * aspect);
+
+            const imageData = viewer.getSnapshot({
+                format: "png",
+                width: width*5,
+                height: height*5
+            });
+
+            var element = document.getElementById("myCanvas");
+            html2canvas(element).then(function(canvas) {
+                //Export the canvas to its data URI representation
+                var base64image = canvas.toDataURL("image/png");
+
+                //Open the image in a new window
+                window.open(base64image , "_blank");
+            });
+        
+
+        })
 
         i++;
 
@@ -208,9 +310,9 @@ viewer.scene.input.on("mouseclicked", (coords) => {
 window.viewer = viewer;
 
 window.onoffline = (event) => {
-    alert("La Connexion au réseau a été perdue.");
+    alert("La connexion au réseau a été perdue.");
 };
 
 window.ononline = (event) => {
-    alert("La Connexion au réseau réussi.");
+    alert("La connexion au réseau réussi.");
 };
