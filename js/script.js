@@ -280,22 +280,7 @@ viewer.scene.input.on("mouseclicked", (coords) => {
             function two() {
                 return new Promise((resolve) => {
                     console.log(document.getElementById("image"))
-                    //html2canvas(document.getElementById("image")).then(canvas => canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})])))
-                    document.getElementById("image", async (e) => {
-                        // Prevent the default behavior.
-                        e.preventDefault();
-                        try {
-                            // Prepare an array for the clipboard items.
-                            let clipboardItems = [];
-                            // Assume `blob` is the blob representation of `kitten.webp`.
-                            clipboardItems.push(
-                                new ClipboardItem({'image/png': blob}));
-                            await navigator.clipboard.write(clipboardItems);
-                            console.log("Image copied, text ignored.");
-                            } catch (err) {
-                                console.error(err.name, err.message);
-                            }
-                        })
+                    html2canvas(document.getElementById("image")).then(canvas => canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})])))
                     resolve();
                 });
             }
