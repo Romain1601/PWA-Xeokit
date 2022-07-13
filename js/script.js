@@ -263,62 +263,50 @@ viewer.scene.input.on("mouseclicked", (coords) => {
 
             var element = document.getElementById("myCanvas");
             
-
-            /* mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
+      
+            var mergeimage = mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
                 b64 => document.getElementById("image").src = b64
-            ) */
+            )
+            mergeimage.then(datasrc => writeToClipboard(dataURItoBlob(datasrc)))
 
-            function one() {
-                return new Promise((resolve) => {
-                    mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
-                        b64 => document.getElementById("image").src = b64
-                    )
-                    resolve();
-                });
+            //Création du blob de la photo à partir du src de l'image
+            function dataURItoBlob(dataURI) {
+                // convert base64 to raw binary data held in a string
+                // doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+                var byteString = atob(dataURI.split(',')[1]);
+              
+                // separate out the mime component
+                var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+              
+                // write the bytes of the string to an ArrayBuffer
+                var ab = new ArrayBuffer(byteString.length);
+              
+                // create a view into the buffer
+                var ia = new Uint8Array(ab);
+              
+                // set the bytes of the buffer to the correct values
+                for (var i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+              
+                // write the ArrayBuffer to a blob, and you're done
+                var blob = new Blob([ab], {type: mimeString});
+                return blob;
+              
             }
 
-            function two() {
-                return new Promise((resolve) => {
-                    console.log(document.getElementById("image"))
-                    html2canvas(document.getElementById("image")).then(canvas => canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})])))
-                    resolve();
-                });
+            //Copie dans le presse-papier
+            async function writeToClipboard(imageBlob) {
+                try {
+                  await navigator.clipboard.write([
+                    new ClipboardItem({
+                      'image/png': imageBlob,
+                    }),
+                  ]);
+                } catch (error) {
+                  console.error(error);
+                }
             }
-
-
-            async function fnAsync() {
-                await one();
-                await two();
-            }
-            fnAsync();
-            
-            
-            
-
-            
-
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
         
 
         })
