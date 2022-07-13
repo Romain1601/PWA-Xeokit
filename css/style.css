@@ -27,6 +27,11 @@ body {
     background-image: linear-gradient(lightblue, white);
 }
 
+#myCanvas2 {
+    width: 100%;
+    height: 100%;
+}
+
 .slideout-sidebar {
     background: white;
     position: fixed;

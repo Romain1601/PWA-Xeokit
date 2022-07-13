@@ -43,7 +43,7 @@ const sceneModel = xktLoader.load({
 
 const annotations = new AnnotationsPlugin(viewer, {
 
-    markerHTML: "<div class='annotation-marker' style='background-color: {{markerBGColor}};'>{{glyph}}</div>",
+    markerHTML: "<div class='annotation-marker' id='annotation-marker' style='background-color: {{markerBGColor}};'>{{glyph}}</div>",
     labelHTML: "<div class='annotation-label' style='background-color: {{labelBGColor}};'><div class='annotation-title'>{{title}}</div><div class='annotation-desc'>{{description}}</div></div>",
 
     values: {
@@ -157,8 +157,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
             }
 
             //Régle le probleme des annotations qui se créée en plus lorsqu'on clique sur le modal
-            var test = Object.keys(annotations.annotations);
-            test.forEach((t) => {
+            var idannotation = Object.keys(annotations.annotations);
+            idannotation.forEach((t) => {
                 if(t.startsWith("__")){
                     annotations.destroyAnnotation(t)
                 }
@@ -228,6 +228,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 console.log(annotation.plugin)
                 imageSource = URL.createObjectURL(image[0])
                 annotation.setValues({imageSrc: imageSource})
+                
+
             }
             else {
                 annotation._labelHTML = "<div class='annotation-label' style='background-color: {{labelBGColor}};'>\
@@ -237,8 +239,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
             }
 
             //Régle le probleme des annotations qui se créée en plus lorsqu'on clique sur le modal
-            var test = Object.keys(annotations.annotations);
-            test.forEach((t) => {
+            var idannotation = Object.keys(annotations.annotations);
+            idannotation.forEach((t) => {
                 if(t.startsWith("__")){
                     annotations.destroyAnnotation(t)
                 }
@@ -247,26 +249,91 @@ viewer.scene.input.on("mouseclicked", (coords) => {
             $("#inputs")[0].reset();
             viewer.scene.input.setEnabled(true);
 
-            const canvas = viewer.scene.canvas;
-            const canvasElement = canvas.canvas;
-            const aspect = canvasElement.height / canvasElement.width;
-            const width = 200;
-            const height = Math.floor(width * aspect);
-
-            const imageData = viewer.getSnapshot({
-                format: "png",
-                width: width*5,
-                height: height*5
-            });
+            
+            var canvas2 = document.getElementById("myCanvas2");
+            canvas2.width = document.documentElement.clientWidth
+            canvas2.height = document.documentElement.clientHeight
+            var ctx1 = canvas2.getContext("2d");
+            ctx1.strokeStyle = 'black';
+            ctx1.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx1.beginPath();
+            ctx1.arc(coords[0], coords[1], 10, 0, 2 * Math.PI, false);
+            ctx1.stroke();
+            ctx1.fill();
 
             var element = document.getElementById("myCanvas");
-            html2canvas(element).then(function(canvas) {
-                //Export the canvas to its data URI representation
-                var base64image = canvas.toDataURL("image/png");
+            
 
-                //Open the image in a new window
-                window.open(base64image , "_blank");
-            });
+            /* mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
+                b64 => document.getElementById("image").src = b64
+            ) */
+
+            function one() {
+                return new Promise((resolve) => {
+                    mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
+                        b64 => document.getElementById("image").src = b64
+                    )
+                    resolve();
+                });
+            }
+
+            function two() {
+                return new Promise((resolve) => {
+                    console.log(document.getElementById("image"))
+                    //html2canvas(document.getElementById("image")).then(canvas => canvas.toBlob(blob => navigator.clipboard.write([new ClipboardItem({'image/png': blob})])))
+                    document.getElementById("image", async (e) => {
+                        // Prevent the default behavior.
+                        e.preventDefault();
+                        try {
+                            // Prepare an array for the clipboard items.
+                            let clipboardItems = [];
+                            // Assume `blob` is the blob representation of `kitten.webp`.
+                            clipboardItems.push(
+                                new ClipboardItem({'image/png': blob}));
+                            await navigator.clipboard.write(clipboardItems);
+                            console.log("Image copied, text ignored.");
+                            } catch (err) {
+                                console.error(err.name, err.message);
+                            }
+                        })
+                    resolve();
+                });
+            }
+
+
+            async function fnAsync() {
+                await one();
+                await two();
+            }
+            fnAsync();
+            
+            
+            
+
+            
+
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
         
 
         })
@@ -279,33 +346,11 @@ viewer.scene.input.on("mouseclicked", (coords) => {
 
         
     }
+
+    
+
+
 });
-
-/* sceneModel.on("loaded", () => {
-    annotations.createAnnotation({
-        id: "myAnnotation0",
-        /////////////////////////////////////////  Entity
-        worldPos: [1842010.9378785258, 19.817048380610856, -5173294.766843413],
-        occludable: false,
-        markerShown: true,
-        labelShown: false,
-
-        labelHTML: "<div class='annotation-label' style='background-color: {{labelBGColor}};'>\
-            <div class='annotation-title'>{{title}}</div>\
-            <div class='annotation-desc'>{{description}}</div>\
-            <br><img alt='myImage' width='150px' height='100px' src='{{imageSrc}}'>\
-            </div>",
-
-        values: {
-            glyph: "A0",
-            title: "The West wall",
-            description: "Annotations can contain<br>custom HTML like this<br>image:",
-            markerBGColor: "red",
-            imageSrc: "https://xeokit.io/img/docs/BIMServerLoaderPlugin/schependomlaan.png"
-        },
-
-    });
-}) */
 
 window.viewer = viewer;
 
