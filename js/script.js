@@ -331,7 +331,7 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 divelementcopier += '<img src="'+base64data+'" />\n';
                 divelementcopier += '<p>Titre de l\'annotation : ' + titre + '</p>\n';
                 divelementcopier += '<p>Description de l\'annotation : ' + description + '</p><br>';
-                divelementcopier += '<img src="'+document.getElementById("image").src+'" style="width: 350px;"/>\n';
+                divelementcopier += '<img src="'+document.getElementById("image").src+'" id="imgclick" style="width: 330px;"/>\n';
                 //divelementcopier += '<button id="copier" type="button" class="btn btn-primary">Copier</button>'
                 divelementcopier += '<button id="screenshot" type="button" class="btn btn-primary">Prendre un screenshot</button>'
                 
@@ -340,12 +340,19 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 let blob = new Blob([snapshots.innerHTML], {type: 'text/html'});
                 writeToClipboard2(blob)
                 document.getElementById('screenshot').textContent = "Prendre un screenshot"
+                //document.getElementById("imgclick").addEventListener("click", remove())
+                
 
 
 
-                const toastLiveExample = document.getElementById('copyToast')
+
+                /* const toastLiveExample = document.getElementById('copyToast')
                 const toast = new bootstrap.Toast(toastLiveExample)
-                toast.show()
+                toast.show() */
+                Toast.fire({
+                    icon: 'success',
+                    title: 'La sélection a bien été copiée dans le presse papier'
+                })
                 
                 $("#copier").click(function() {
                     //Supprime les boutons copier et screenshot
@@ -369,9 +376,13 @@ viewer.scene.input.on("mouseclicked", (coords) => {
 
 
                     
-                    const toastLiveExample = document.getElementById('copyToast')
+                    /* const toastLiveExample = document.getElementById('copyToast')
                     const toast = new bootstrap.Toast(toastLiveExample)
-                    toast.show()
+                    toast.show() */
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'La sélection a bien été copiée dans le presse papier'
+                    })
                     
                 })
 
@@ -383,7 +394,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                     var img = document.createElement('img');
                     mergeimg.then(
                         result => img.src = result, 
-                        img.setAttribute('width', '350px'),
+                        img.setAttribute('width', '330px'),
+                        img.id = "imgclick",
                         snapshots.insertBefore(img, buttonscreeshot),
                         document.getElementById('screenshot').textContent = ""
                     ).then(
@@ -391,12 +403,67 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                     ).then(
                         result3 => document.getElementById('screenshot').textContent = "Prendre un screenshot"
                     )
-                    const toastLiveExample = document.getElementById('copyToast')
+                    /* const toastLiveExample = document.getElementById('copyToast')
                     const toast = new bootstrap.Toast(toastLiveExample)
-                    toast.show()
+                    toast.show() */
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'La sélection a bien été copiée dans le presse papier'
+                    })
           
                 })
 
+            }
+
+            $(document).on("click", "img#imgclick", function(e) { 
+                Swal.fire({
+                    title: 'Voulez-vous vraiment supprimer la photo ?',
+                    showDenyButton: true,
+                    showCancelButton: false,
+                    confirmButtonText: 'Oui',
+                    denyButtonText: 'Non',
+                    confirmButtonColor: "#3085d6",
+                    customClass: {
+                      actions: 'my-actions',
+                      confirmButton: 'order-1',
+                      denyButton: 'order-3',
+                    }
+                  }).then((result) => {
+                    if (result.isConfirmed) {
+                        $(this).remove()
+                        //Swal.fire('Saved!', '', 'success')
+                        document.getElementById('screenshot').textContent = ""
+                        let blob = new Blob([snapshots.innerHTML], {type: 'text/html'});
+                        writeToClipboard2(blob)
+                        document.getElementById('screenshot').textContent = "Prendre un screenshot"
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'La sélection a bien été copiée dans le presse papier'
+                        })
+                    } else if (result.isDenied) {
+                        //Swal.fire('Changes are not saved', '', 'info')
+                    }
+                  })
+                  
+            });
+
+            const Toast = Swal.mixin({
+                toast: true,
+                icon: 'success',
+                title: 'General Title',
+                position: 'top-right',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.addEventListener('mouseenter', Swal.stopTimer)
+                  toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+
+            function remove(el) {
+                console.log(el)
             }
 
             function createElement(str) {
