@@ -28,7 +28,7 @@
 	<body>
 		<canvas id="myCanvas"></canvas>
 		<canvas id="myCanvas2"></canvas>
-		<canvas id="myCanvas3"></canvas>
+		<div id="elementcopier" style="display: none;"></div>
 		<img src="" id="image" />
 		<canvas id="myNavCubeCanvas"></canvas>
 
@@ -42,7 +42,7 @@
 				<div class="modal-body">
 					<form id="inputs" class="needs-validation" novalidate="">
                         <div class="form-group mx-2 mb-3">
-                            <label for="firstname">Titre</label>
+                            <!-- <label for="firstname">Titre</label> -->
                             <select class="form-select" id="titreannotation" aria-label="Default select example">
 								<option selected>Sélectionnez un type d'évènement</option>
 								<option value="1">Fuite d'eau</option>
@@ -55,7 +55,7 @@
                             <input type="text" class="form-control" id="descriptionannotation" placeholder="Détaillez les circonstances, les impacts..." required="">
                         </div>
 						<div class="form-group mx-2">
-							<label for="formFile" class="form-label">Default file input example</label>
+							<label for="formFile" class="form-label">Importer un document</label>
   							<input class="form-control" type="file" id="formFile">
 						</div>
                     </form>
@@ -66,6 +66,19 @@
 				</div>
 			  </div>
 			</div>
+		</div>
+
+
+		<div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3">
+		<div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+			<div class="toast-header">
+				<strong class="me-auto">Bootstrap</strong>
+				<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+			</div>
+			<div class="toast-body">
+				La sélection a bien été copiée dans le presse papier
+			</div>
+		</div>
 		</div>
 
 

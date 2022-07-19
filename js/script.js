@@ -89,6 +89,14 @@ viewer.scene.input.on("mouseclicked", (coords) => {
         myModal.show()
         viewer.scene.input.setEnabled(false);
 
+        //Reset de la partie pour copier et prendre des screenshot
+        var snapshots = document.getElementById('elementcopier');
+        while (snapshots.firstChild) {
+            snapshots.removeChild(snapshots.lastChild);
+        }
+        document.getElementById('elementcopier').style.display = "none";
+
+
         //Gère l'ouverture du modal
         $("#submit").click(function() {
 
@@ -220,16 +228,13 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                     //imageSrc: URL.createObjectURL(image[0])
                     //imageSrc: imageSource
                 },
-
             })
+            
             
 
             if (image.length !== 0){
-                console.log(annotation.plugin)
                 imageSource = URL.createObjectURL(image[0])
                 annotation.setValues({imageSrc: imageSource})
-                
-
             }
             else {
                 annotation._labelHTML = "<div class='annotation-label' style='background-color: {{labelBGColor}};'>\
@@ -237,6 +242,7 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 <div class='annotation-desc'>{{description}}</div>\
                 </div>"
             }
+            
 
             //Régle le probleme des annotations qui se créée en plus lorsqu'on clique sur le modal
             var idannotation = Object.keys(annotations.annotations);
@@ -245,10 +251,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                     annotations.destroyAnnotation(t)
                 }
             })
-            $("#myModal").hide(); 
-            $("#inputs")[0].reset();
-            viewer.scene.input.setEnabled(true);
-
+            
+            
             
             var canvas2 = document.getElementById("myCanvas2");
             canvas2.width = document.documentElement.clientWidth
@@ -263,11 +267,11 @@ viewer.scene.input.on("mouseclicked", (coords) => {
 
             var element = document.getElementById("myCanvas");
             
-      
+            //Creation du merge des 2 images
             var mergeimage = mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
                 b64 => document.getElementById("image").src = b64
             )
-            mergeimage.then(datasrc => writeToClipboard(dataURItoBlob(datasrc)))
+            //mergeimage.then(datasrc => writeToClipboard(dataURItoBlob(datasrc)))
 
             //Création du blob de la photo à partir du src de l'image
             function dataURItoBlob(dataURI) {
@@ -307,8 +311,125 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                   console.error(error);
                 }
             }
-        
 
+            
+            var divelementcopier = document.getElementById('elementcopier').innerHTML;
+            var snapshots = document.getElementById('elementcopier');
+            document.getElementById('elementcopier').style.display = "";
+            
+            
+            //Transormer l'importation de l'image du modal en base64
+            var reader = new FileReader();
+            reader.readAsDataURL(image[0]); 
+            reader.onload = function() {
+                var base64data = reader.result;            
+                //console.log(dataURItoBlob(base64data)) //Creation du blob de l'image de l'annotation
+            
+                
+                divelementcopier += '<h1>kwarto BIM Explorer</h1>'
+                divelementcopier += '<p>Photo de l\'annotation : </p>\n';
+                divelementcopier += '<img src="'+base64data+'" />\n';
+                divelementcopier += '<p>Titre de l\'annotation : ' + titre + '</p>\n';
+                divelementcopier += '<p>Description de l\'annotation : ' + description + '</p><br>';
+                divelementcopier += '<img src="'+document.getElementById("image").src+'" style="width: 350px;"/>\n';
+                //divelementcopier += '<button id="copier" type="button" class="btn btn-primary">Copier</button>'
+                divelementcopier += '<button id="screenshot" type="button" class="btn btn-primary">Prendre un screenshot</button>'
+                
+                snapshots.appendChild(createElement(divelementcopier))
+                document.getElementById('screenshot').textContent = "";
+                let blob = new Blob([snapshots.innerHTML], {type: 'text/html'});
+                writeToClipboard2(blob)
+                document.getElementById('screenshot').textContent = "Prendre un screenshot"
+
+
+
+                const toastLiveExample = document.getElementById('copyToast')
+                const toast = new bootstrap.Toast(toastLiveExample)
+                toast.show()
+                
+                $("#copier").click(function() {
+                    //Supprime les boutons copier et screenshot
+                    //document.getElementById('copier').remove();
+                    document.getElementById('screenshot').remove();
+                    let blob = new Blob([snapshots.innerHTML], {type: 'text/html'});
+                    writeToClipboard2(blob)
+
+                    while (snapshots.firstChild) {
+                        snapshots.removeChild(snapshots.lastChild);
+                    }
+                    document.getElementById('elementcopier').style.display = "none";
+
+                    
+                    /* var bcopy = document.createElement('button');
+                    bcopy.id = 'copier'
+                    bcopy.type = 'button'
+                    bcopy.className = 'btn btn-primary'
+                    bcopy.innerHTML = 'Copier'
+                    snapshots.appendChild(bcopy) */
+
+
+                    
+                    const toastLiveExample = document.getElementById('copyToast')
+                    const toast = new bootstrap.Toast(toastLiveExample)
+                    toast.show()
+                    
+                })
+
+                $("#screenshot").click(function() {
+                    var buttonscreeshot = document.getElementById('screenshot')
+                    var mergeimg = mergeImages([element.toDataURL(), canvas2.toDataURL()]).then(
+                        b64 => document.getElementById("image").src = b64
+                    )
+                    var img = document.createElement('img');
+                    mergeimg.then(
+                        result => img.src = result, 
+                        img.setAttribute('width', '350px'),
+                        snapshots.insertBefore(img, buttonscreeshot),
+                        document.getElementById('screenshot').textContent = ""
+                    ).then(
+                        result2 =>  writeToClipboard2(new Blob([snapshots.innerHTML], {type: 'text/html'}))
+                    ).then(
+                        result3 => document.getElementById('screenshot').textContent = "Prendre un screenshot"
+                    )
+                    const toastLiveExample = document.getElementById('copyToast')
+                    const toast = new bootstrap.Toast(toastLiveExample)
+                    toast.show()
+          
+                })
+
+            }
+
+            function createElement(str) {
+                var frag = document.createDocumentFragment();
+            
+                var elem = document.createElement('div');
+                elem.innerHTML = str;
+            
+                while (elem.childNodes[0]) {
+                    frag.appendChild(elem.childNodes[0]);
+                }
+                return frag;
+            }
+            
+
+            async function writeToClipboard2(imageBlob) {
+                try {
+                  await navigator.clipboard.write([
+                    new ClipboardItem({
+                      'text/html': imageBlob,
+                    }),
+                  ]);
+                } catch (error) {
+                  console.error(error);
+                }
+            }
+
+            //writeToClipboard2(blob)
+
+
+            $("#myModal").hide();
+            $("#inputs")[0].reset();
+            viewer.scene.input.setEnabled(true);
         })
 
         i++;
