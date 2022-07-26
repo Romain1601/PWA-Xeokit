@@ -29,6 +29,11 @@
 		<canvas id="myCanvas"></canvas>
 		<canvas id="myCanvas2"></canvas>
 		<div id="elementcopier" style="display: none;"></div>
+		<div id="treeViewContainer">
+			<input id="searchbar" type="text" name="search">
+			<ul id="listholder"></ul>
+		</div>
+		<div id="treeViewContainer2" style="display: none;"></div>
 		<img src="" id="image" />
 		<canvas id="myNavCubeCanvas"></canvas>
 
@@ -43,7 +48,7 @@
 					<form id="inputs" class="needs-validation" novalidate="">
                         <div class="form-group mx-2 mb-3">
                             <!-- <label for="firstname">Titre</label> -->
-                            <select class="form-select" id="titreannotation" aria-label="Default select example">
+                            <select class="form-select" id="titreannotation" aria-label="Default select example" required>
 								<option selected>Sélectionnez un type d'évènement</option>
 								<option value="1">Fuite d'eau</option>
 								<option value="2">Dégradation</option>
@@ -52,11 +57,11 @@
                         </div>
                         <div class="form-group mx-2 mb-3">
                             <label for="lastname">Description</label>
-							<textarea class="form-control" id="descriptionannotation" placeholder="Détaillez les circonstances, les impacts..." rows="3"></textarea>
+							<textarea class="form-control" id="descriptionannotation" placeholder="Détaillez les circonstances, les impacts..." rows="3" required></textarea>
                         </div>
 						<div class="form-group mx-2">
 							<label for="formFile" class="form-label">Importer un document</label>
-  							<input class="form-control" type="file" id="formFile">
+  							<input class="form-control" type="file" id="formFile" required>
 						</div>
                     </form>
 				</div>
