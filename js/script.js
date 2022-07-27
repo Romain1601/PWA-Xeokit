@@ -49,9 +49,9 @@ const treeView = new TreeViewPlugin(viewer, {
 viewer.cameraControl.on("picked", function (e) {
     var objectId = e.entity.id;
     //0CE_ueYG1Fz8ko02YM2bQX
-    //console.log("e : ", e)
-    //console.log("entity : ", e.entity)
-    //console.log("id : ", e.entity.id)
+    console.log("e : ", e)
+    console.log("entity : ", e.entity)
+    console.log("id : ", e.entity.id)
     treeView.showNode(objectId);
     //console.log($("#1" + e.entity.id).closest("span"))    
 });
@@ -266,6 +266,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 canvasPos: coords,
                 pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
             });
+
+            console.log("pickresult.id : ", pickResult.entity.id)
             
             //Recuperation des valeurs entrées par l'utilisateur
             $("#inputs").each(function() {
@@ -347,6 +349,8 @@ viewer.scene.input.on("mouseclicked", (coords) => {
                 canvasPos: coords,
                 pickSurface: true  // <<------ This causes picking to find the intersection point on the entity
             });
+
+            console.log("pickresult : ", pickResult)
             
             //Recuperation des valeurs entrées par l'utilisateur
             $("#inputs").each(function() {
@@ -736,3 +740,13 @@ function findChildrenForK(sources, k) {
 
 
 //------------------------------------------------------------------------------------------------------------------
+function loadStuff() {
+    var apiPath = "/model/test/ifc"
+    $.get(apiPath, function(data){
+        console.log("apiPath : ", data)
+    })
+}
+
+
+loadStuff()
+
