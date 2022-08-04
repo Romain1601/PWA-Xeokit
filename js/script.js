@@ -740,13 +740,3 @@ function findChildrenForK(sources, k) {
 
 
 //------------------------------------------------------------------------------------------------------------------
-function loadStuff() {
-    var apiPath = "/model/test/ifc"
-    $.get(apiPath, function(data){
-        console.log("apiPath : ", data)
-    })
-}
-
-
-loadStuff()
-

@@ -11,18 +11,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"></script>
 </head>
 <body>
-<input type="checkbox" id="info-button"/>
-<label for="info-button" class="info-button"><i class="far fa-3x fa-question-circle"></i></label>
+    <input type="checkbox" id="info-button"/>
+    <label for="info-button" class="info-button"><i class="far fa-3x fa-question-circle"></i></label>
     <canvas id="myCanvas"></canvas>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js" crossorigin></script>
+    <script src="https://unpkg.com/swagger-client"></script>
 </body>
 
 <script type="module">
 
-    //------------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------------
     // Import the modules we need for this example
-    //------------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------------
 
-    import {Viewer, XKTLoaderPlugin, ContextMenu, TreeViewPlugin} from "../js/xeokit-sdk.es.js";
+    import {Viewer, WebIFCLoaderPlugin} from "../js/xeokit-sdk.es.js";
 
     //------------------------------------------------------------------------------------------------------------------
     // Create a Viewer, arrange the camera
@@ -33,28 +36,50 @@
         transparent: true
     });
 
-    viewer.camera.eye = [-2.56, 8.38, 8.27];
-    viewer.camera.look = [13.44, 3.31, -14.83];
-    viewer.camera.up = [0.10, 0.98, -0.14];
+    viewer.camera.eye = [-3.933, 2.855, 27.018];
+    viewer.camera.look = [4.400, 3.724, 8.899];
+    viewer.camera.up = [-0.018, 0.999, 0.039];
 
     //----------------------------------------------------------------------------------------------------------------------
     // Load a model
     //----------------------------------------------------------------------------------------------------------------------
 
-    const xktLoader = new XKTLoaderPlugin(viewer);
+    const ifcLoader = new WebIFCLoaderPlugin(viewer, {
+        //wasmPath: "../dist/" // <<------- Path to web-ifc.wasm, which does the IFC parsing for us
+        wasmPath: "https://cdn.jsdelivr.net/npm/@xeokit/xeokit-sdk/dist/"
+    });
 
-    const sceneModel = xktLoader.load({
+    const sceneModel = ifcLoader.load({
         id: "myModel",
-        src: "models/xkt/MAP.gltf.xkt",
-        edges: true,
-        excludeUnclassifiedObjects: false
+        src: "https://dev.kwarto.immo/bim/model/123/ifc",
+        loadMetadata: true, // Default
+        excludeTypes: ["IfcSpace"],
+        edges: true
     });
 
 
 
 
 
-    window.viewer = viewer;
+    //window.viewer = viewer;
+
+    
+    
+    function loadStuff() {
+        var apiPath = "/model/123/ifc"
+        var apiPath2 = "/bim/model/model_id/annotations"
+
+        $.get('https://dev.kwarto.immo/bim' + apiPath, function(json_data){
+            //const file = new File(["foo"], json_data);
+            //console.log(file.name)
+            
+        });
+
+    }
+
+    $(function(){
+        loadStuff()
+    })
 
 </script>
 </html>
